@@ -1,9 +1,3 @@
-/*
-ID: shivara2
-LANG: JAVA
-TASK: taskName
-*/
-
 import java.util.*;
 import java.math.*;
 import java.io.*;
@@ -17,25 +11,6 @@ class Main {
     pw.println(0);
     pw.close();
   }
-
-  public static int[][] sort(int[][] array) {
-    //Sort an array (immune to quicksort TLE)
-		Random rgen = new Random();
-		for (int i = 0; i< array.length; i++) {
-      int randomPosition = rgen.nextInt(array.length);
-      int[] temp = array[i];
-      array[i] = array[randomPosition];
-      array[randomPosition] = temp;
-		}
-		Arrays.sort(array, new Comparator<int[]>() {
-      @Override
-      public int compare(int[] arr1, int[] arr2) {
-        //Ascending order.
-        return arr1[1] - arr2[1];
-      }
-		});
-		return array;
-	}
 
   static class FastScanner { 
     BufferedReader br; 
@@ -117,90 +92,14 @@ class Node {
 	}
 }
 
-class BinaryIndexedTree {
-	  public long[] arr;
- 
-	  public BinaryIndexedTree (int N) {
-	    arr = new long[N+1];
-	    arr[0] = 0;
-	  }
- 
-	  //add k to the i-th element.
-	  public void add(long k, int i) {
-	    int node = i+1;
-	    while (node < arr.length) {
-	      arr[node] += k;
-	      node += node & (-node);
-	    }
-	  }
- 
-	  //sum up the elements from input[s_i] to input[e_i], from [s_i,e_i).
-	  public long sum(int s_i, int e_i) {
-	    return sum(e_i) - sum(s_i);
-	  }
- 
-	  public long sum(int i) {
-	    long total = 0;
-	    int node = i;
-	    while (node > 0) {
-	      total += arr[node];
-	      node -= node & (-node);
-	    }
-	    return total;
-	  }
-}
-
-class DisjointSetUnion {
-	public int N;
-	public int[] parent;
-	public int[] rank;
-	public int count;
-	
-	public DisjointSetUnion(int numNodes) {
-		N = numNodes;
-    parent = new int[N];
-    rank = new int[N];
-    for (int i = 0; i < N; i++) {
-      parent[i] = i;
-      rank[i] = 1;
-    }
-    count = numNodes;
-	}
-	
-	public boolean isConnected(int p, int q) {
-	  return root(p) == root(q);
-	}
-	
-	public int root(int p) {
-		while (p != parent[p]) {
-      p = parent[p];
-    }
-	  return p;
-	}
-	
-	//only connect p and q if they are disjointed.
-	public void connect(int p, int q) {
-		int rootP = root(p);
-	  int rootQ = root(q);
-	  if (rank[rootP] >= rank[rootQ]) {
-	   	parent[rootQ] = rootP;
-	   	rank[rootP] += rank[rootQ];
-	  } else if (rank[rootQ] > rank[rootP]) {
-	   	parent[rootP] = rootQ;
-	   	rank[rootQ] += rank[rootP];
-	  }
-	  count--;
-	}
-}
-
 /*Algorithms
 DFS/BFS (Searching through a graph)
 Binary Search (finding something in a sorted list. Commonly used to search through possibilities in a more efficient way.)
 Floodfill (connected regions in 2D array)
 Prefix sums (cumulative arrays, useful in dealing with contiguous blocks of stuff)
 
-Stacks,Queues,Priority Queues, Objects (Class), HashMap, HashSet, Array List, Arrays
-Sorting w/ custom comparator
+Stacks,Queues,Priority Queues, Objects (Class), HashMap, TreeMap, HashSet, TreeMap, Array List, Arrays
+Sorting a 2D list w/ custom comparator
 Arrays.sort(arr, new Comparator<int[]>() {
   @Override
   public int compare(int[] arr1, int[] arr2) {
@@ -210,7 +109,7 @@ Arrays.sort(arr, new Comparator<int[]>() {
 });
 
 
-Prefix sums: 
+Prefix sums (O(1) queries and O(N) updates): 
 Imagine there is a road and you are keeping track of whether there is a stop sign at each mile mark:
 [0, 1, 1, 0, 1, 0, 0]
 
@@ -223,5 +122,10 @@ How many stop signs are there between index 1 and 3?
 cumFreq[3]-cumFreq[0] (note that to make this inclusive you have to look at the indx below)
 
 Graph Algorithms
-Dijkstra, Kruskal, Prims (starred Repls)
+Dijkstra (shortest path), Kruskal (disjoint set union MST), Prims (Dijkstra-esque MST distance)
+Disjoint Set Union is good at "connecting" separated components together of a graph together.
+Floyd Wurshall Algorithm (get shortest paths between all pairs of nodes in O(V^3) time.
+
+Binary Indexed Tree (effectively a prefix sum with logN queries and logN updates).
+Java Segment Tree (log N updates and logN range sum/min/max queries) - lazy propagation
 */
