@@ -4,8 +4,10 @@ import java.io.*;
 
 class Main {
   public static void main(String[] args) throws IOException {
-    FastScanner sc = new FastScanner("taskName.in");
+    InputStream is = new FileInputStream("taskname.in");
     PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("taskName.out")));
+    FastScanner sc = new FastScanner(is);
+
     int N = sc.nextInt();
 
     pw.println(0);
@@ -13,43 +15,44 @@ class Main {
   }
 
   static class FastScanner { 
-    BufferedReader br; 
-    StringTokenizer st; 
+    public BufferedReader br; 
+    public StringTokenizer st; 
   
-    public FastScanner(String filename) throws IOException { 
-      br = new BufferedReader(new FileReader(filename));
+    public FastScanner(InputStream is) throws IOException { 
+      br = new BufferedReader(new InputStreamReader(is),32768);
+      st = null;
     }
   
-    String next() { 
-      while (st == null || !st.hasMoreElements()) { 
+    public String next() { 
+      while (st == null || !st.hasMoreTokens()) { 
         try { 
           st = new StringTokenizer(br.readLine()); 
         } 
         catch (IOException  e) { 
-          e.printStackTrace(); 
-        } 
+          throw new RuntimeException(e);
+        }
       } 
       return st.nextToken(); 
     } 
   
-    int nextInt() { 
+    public int nextInt() { 
       return Integer.parseInt(next()); 
     } 
   
-    long nextLong() { 
+    public long nextLong() { 
       return Long.parseLong(next()); 
     } 
   
-    double nextDouble() { 
+    public double nextDouble() { 
       return Double.parseDouble(next()); 
     } 
   
-    String nextLine() { 
+    public String nextLine() { 
       String str = ""; 
       try { 
         str = br.readLine(); 
       } catch (IOException e) { 
-        e.printStackTrace(); 
+        throw new RuntimeException(e);
       } 
       return str; 
     }
@@ -98,8 +101,8 @@ Binary Search (finding something in a sorted list. Commonly used to search throu
 Floodfill (connected regions in 2D array)
 Prefix sums (cumulative arrays, useful in dealing with contiguous blocks of stuff)
 
-Stacks,Queues,Priority Queues, Objects (Class), HashMap, TreeMap, HashSet, TreeMap, Array List, Arrays
-Sorting a 2D list w/ custom comparator
+Stacks,Queues,Priority Queues, Objects (Class), HashMap, HashSet, Array List, Arrays
+Sorting w/ custom comparator
 Arrays.sort(arr, new Comparator<int[]>() {
   @Override
   public int compare(int[] arr1, int[] arr2) {
@@ -109,7 +112,7 @@ Arrays.sort(arr, new Comparator<int[]>() {
 });
 
 
-Prefix sums (O(1) queries and O(N) updates): 
+Prefix sums: 
 Imagine there is a road and you are keeping track of whether there is a stop sign at each mile mark:
 [0, 1, 1, 0, 1, 0, 0]
 
