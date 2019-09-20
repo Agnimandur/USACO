@@ -4,40 +4,33 @@ import java.io.*;
 
 class Main {
   public static void main(String[] args) throws IOException {
-    InputStream is = new FileInputStream("teamwork.in");
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("teamwork.out")));
+    InputStream is = new FileInputStream("nocross.in");
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("nocross.out")));
     FastScanner sc = new FastScanner(is);
+
     int N = sc.nextInt();
-    int K = sc.nextInt();
-    int[] nums = new int[N];
-    for (int i = 0; i < N; i++) {
-      nums[i] = sc.nextInt();
+    int[] top = new int[N+1];
+    int[] bottom = new int[N+1];
+    for (int i = 1; i <= N; i++) {
+      top[i] = sc.nextInt();
     }
-    int[][] max = new int[N][K]; //max[i][j] stores the maximum of the j elements following i.
-    for (int i = 0; i < N; i++) {
-      max[i][0] = nums[i];
-      for (int j = 1; j < K; j++) {
-        if (i + j >= N) {
-          break;
+    for (int i = 1; i <= N; i++) {
+      bottom[i] = sc.nextInt();
+    }
+    int[][] dp = new int[N+1][N+1];
+    for (int i = 1; i <= N; i++) {
+      for (int j =  1; j <= N; j++) {
+        int val = Math.max(dp[i][j-1],dp[i-1][j]);
+        if (Math.abs(top[i]-bottom[j]) <= 4) {
+          val = Math.max(val,dp[i-1][j-1]+1);
         } else {
-          max[i][j] = Math.max(max[i][j-1],nums[i+j]);
+          val = Math.max(val,dp[i-1][j-1]);
         }
+        dp[i][j] = val;
       }
     }
 
-    int[] dp = new int[N+1];
-    for (int i = 1; i <= Math.min(N,K); i++) {
-      dp[i] = i*max[0][i-1];
-    }
-    for (int i = K+1; i <= N; i++) {
-      for (int j = 1; j <= K; j++) {
-        int score = dp[i-j]+j*max[i-j][j-1];
-        //iterate through placing nums[i-1] on a team of size j.
-        dp[i] = Math.max(dp[i],score);
-      }
-    }
-    //System.out.println(dp[N]);
-    pw.println(dp[N]);
+    pw.println(dp[N][N]);
     pw.close();
   }
 

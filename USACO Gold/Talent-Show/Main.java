@@ -1,66 +1,86 @@
-/*
-ID: shivara2
-LANG: JAVA
-TASK: talent
-*/
-
 import java.util.*;
+import java.math.*;
 import java.io.*;
 
 class Main {
-  public static void main(String[] args) throws IOException{
-    //talent.in
-    BufferedReader br = new BufferedReader(new FileReader("talent.in"));
-    StringTokenizer st = new StringTokenizer(br.readLine());
-    int N = Integer.parseInt(st.nextToken());
-    int W = Integer.parseInt(st.nextToken());
-    int[][] cows = new int[N][2];
-    int talent = 0;
-    for (int i = 0; i < N; i++) {
-      st = new StringTokenizer(br.readLine());
-      cows[i][0] = Integer.parseInt(st.nextToken());
-      cows[i][1] = Integer.parseInt(st.nextToken());
-      talent += cows[i][1];
-    }
-    br.close();
-
-    int[][] dp = new int[N+1][talent+1];
-    for (int i = 0; i < N+1; i++) {
-      for (int j = 1; j < talent+1; j++) {
-        dp[i][j] = Integer.MAX_VALUE;
-      }
-    }
-
-    //Knapsack DP
-    //Every entry records the minimum weight necessary to achieve the required talent
-    for (int maxCow = 1; maxCow < N+1; maxCow++) {
-      for (int minTalent = 1; minTalent < talent+1;minTalent++) {
-        int weightWithoutLastCow = dp[maxCow-1][minTalent];
-        int weightWithLastCow = Integer.MAX_VALUE;
-        if (cows[maxCow-1][1] == minTalent) {
-          weightWithLastCow = cows[maxCow-1][0];
-        } else if (cows[maxCow-1][1] > minTalent) {
-          weightWithLastCow = Integer.MAX_VALUE;
-        } else if (dp[maxCow-1][minTalent - cows[maxCow-1][1]] != Integer.MAX_VALUE) {
-          weightWithLastCow = cows[maxCow-1][0] + dp[maxCow-1][minTalent - cows[maxCow-1][1]];
-        } else {
-          weightWithLastCow = Integer.MAX_VALUE;
-        }
-        dp[maxCow][minTalent] = Math.min(weightWithoutLastCow,weightWithLastCow);
-      }
-    }
-
-
-    double ratio = 0.0;
-    for (int i = 1; i <= talent; i++) {
-      if (dp[N][i] >= W) {
-        ratio = Math.max(ratio,(double)i/dp[N][i]);
-      }
-    }
-
-    //talent.out
+  public static void main(String[] args) throws IOException {
+    FastScanner sc = new FastScanner("talent.in");
     PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("talent.out")));
-    pw.println((int)Math.floor(1000*ratio));
+    int N = sc.nextInt();
+    int W = sc.nextInt();
+    int[][] cows = new int[N+1][2]; //{weight,talent}
+    for (int i = 1; i <= N; i++) {
+      cows[i][0] = sc.nextInt();
+      cows[i][1] = sc.nextInt();
+    }
+
+    int[][] knapsack = new int[N+1][250001];
+    for (int[] row : knapsack) 
+      Arrays.fill(row, Integer.MAX_VALUE);
+    for (int cow = 1; cow <= N; cow++) {
+      for (int talent = 0; talent <= 250000; talent++) {
+        knapsack[cow][talent] = knapsack[cow-1][talent];
+      }
+      knapsack[cow][cows[cow][1]] = Math.min(knapsack[cow][cows[cow][1]],cows[cow][0]);
+      for (int talent = cows[cow][1]+1; talent <= 250000; talent++) {
+        if (knapsack[cow-1][talent-cows[cow][1]] < Integer.MAX_VALUE) {
+          knapsack[cow][talent] = Math.min(knapsack[cow][talent],knapsack[cow-1][talent-cows[cow][1]]+cows[cow][0]);
+        }
+      }
+    }
+
+    double best = 0.0;
+    for (int talent = 0; talent <= 250000; talent++) {
+      if (knapsack[N][talent] >= W) {
+        best = Math.max(best,(talent+0.0)/knapsack[N][talent]);
+      }
+    }
+    int ans = (int)Math.floor(1000*best);
+    //System.out.println(ans);
+    pw.println(ans);
     pw.close();
+  }
+
+  static class FastScanner {
+    BufferedReader br; 
+    StringTokenizer st; 
+  
+    public FastScanner(String filename) throws IOException { 
+      br = new BufferedReader(new FileReader(filename));
+    }
+  
+    String next() { 
+      while (st == null || !st.hasMoreElements()) { 
+        try { 
+          st = new StringTokenizer(br.readLine()); 
+        } 
+        catch (IOException  e) { 
+          e.printStackTrace(); 
+        } 
+      } 
+      return st.nextToken(); 
+    } 
+  
+    int nextInt() { 
+      return Integer.parseInt(next()); 
+    } 
+  
+    long nextLong() { 
+      return Long.parseLong(next()); 
+    } 
+  
+    double nextDouble() { 
+      return Double.parseDouble(next()); 
+    } 
+  
+    String nextLine() { 
+      String str = ""; 
+      try { 
+        str = br.readLine(); 
+      } catch (IOException e) { 
+        e.printStackTrace(); 
+      } 
+      return str; 
+    }
   }
 }
