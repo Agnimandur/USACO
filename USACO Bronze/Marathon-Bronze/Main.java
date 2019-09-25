@@ -3,46 +3,34 @@ import java.math.*;
 import java.io.*;
 
 class Main {
-  public static int[][] dp;
   public static void main(String[] args) throws IOException {
-    InputStream is = new FileInputStream("248.in");
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("248.out")));
+    InputStream is = new FileInputStream("marathon.in");
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("marathon.out")));
     FastScanner sc = new FastScanner(is);
     int N = sc.nextInt();
-    int[] nums = new int[N];
+    int[][] points = new int[N][2];
+    int dist = 0;
     for (int i = 0; i < N; i++) {
-      nums[i] = sc.nextInt();
-    }
-    dp = new int[N][N];
-    for (int d = 0; d < N; d++) {
-      dp[d][d] = nums[d];
-    }
-    int ans = solve(0,N-1);
-    for (int i = 0; i < N; i++) {
-      for (int j = i; j < N; j++) {
-        ans = Math.max(ans,dp[i][j]);
+      points[i][0] = sc.nextInt();
+      points[i][1] = sc.nextInt();
+      if (i > 0) {
+        dist += Math.abs(points[i][0]-points[i-1][0]);
+        dist += Math.abs(points[i][1]-points[i-1][1]);
       }
     }
-    //System.out.println(ans);
-    pw.println(ans);
+    int best = dist;
+    for (int i = 1; i < N-1; i++) {
+        int save = 0;
+        save += Math.abs(points[i-1][0]-points[i][0]);
+        save += Math.abs(points[i-1][1]-points[i][1]);
+        save += Math.abs(points[i][0]-points[i+1][0]);
+        save += Math.abs(points[i][1]-points[i+1][1]);
+        save -= Math.abs(points[i-1][0]-points[i+1][0]);
+        save -= Math.abs(points[i-1][1]-points[i+1][1]);
+        best = Math.min(best,dist-save);
+    }
+    pw.println(best);
     pw.close();
-  }
-
-  public static int solve(int s, int e) {
-    if (dp[s][e] != 0)
-      return dp[s][e];
-    int collapseInto = -1;
-    for (int i = s; i < e; i++) {
-      int collapse1 = solve(s,i);
-      int collapse2 = solve(i+1,e);
-      if (collapse1 > 0 && collapse2 > 0 && collapse1 == collapse2) {
-        collapseInto = collapse1+1;
-        break;
-      }
-    }
-    dp[s][e] = collapseInto;
-    //If collapseInto == -1, then it doesn't collapse into any one value.
-    return collapseInto;
   }
 
   static class FastScanner { 

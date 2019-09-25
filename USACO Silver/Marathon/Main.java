@@ -3,46 +3,45 @@ import java.math.*;
 import java.io.*;
 
 class Main {
-  public static int[][] dp;
+  public static int[][] points;
   public static void main(String[] args) throws IOException {
-    InputStream is = new FileInputStream("248.in");
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("248.out")));
+    InputStream is = new FileInputStream("marathon.in");
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("marathon.out")));
     FastScanner sc = new FastScanner(is);
     int N = sc.nextInt();
-    int[] nums = new int[N];
-    for (int i = 0; i < N; i++) {
-      nums[i] = sc.nextInt();
+    int K = sc.nextInt();
+    points = new int[N+1][2];
+    for (int i = 1; i <= N; i++) {
+      points[i] = new int[]{sc.nextInt(),sc.nextInt()};
     }
-    dp = new int[N][N];
-    for (int d = 0; d < N; d++) {
-      dp[d][d] = nums[d];
+    int[][] dp = new int[N+1][K+1];
+    for (int j = 0; j <= K; j++) {
+      dp[1][j] = 0;
+      dp[2][j] = man(1,2);
     }
-    int ans = solve(0,N-1);
-    for (int i = 0; i < N; i++) {
-      for (int j = i; j < N; j++) {
-        ans = Math.max(ans,dp[i][j]);
+    for (int i = 3; i <= N; i++) {
+      dp[i][0] = dp[i-1][0] + man(i-1,i);
+    }
+    
+    for (int j = 1; j <= K; j++) {
+      for (int i = 3; i <= N; i++) {
+        //Visit points[i-1]
+        int visitDist = dp[i-1][j]+man(i-1,i);
+        
+        //skip points[i-1]
+        int skipDist = Integer.MAX_VALUE;
+        for (int k = 1; k <= Math.min(j,i-1); k++)
+          skipDist = Math.min(skipDist,dp[i-1-k][j-k]+man(i-1-k,i));
+        dp[i][j] = Math.min(visitDist,skipDist);
       }
     }
-    //System.out.println(ans);
-    pw.println(ans);
+    //System.out.println(dp[N][K]);
+    pw.println(dp[N][K]);
     pw.close();
   }
-
-  public static int solve(int s, int e) {
-    if (dp[s][e] != 0)
-      return dp[s][e];
-    int collapseInto = -1;
-    for (int i = s; i < e; i++) {
-      int collapse1 = solve(s,i);
-      int collapse2 = solve(i+1,e);
-      if (collapse1 > 0 && collapse2 > 0 && collapse1 == collapse2) {
-        collapseInto = collapse1+1;
-        break;
-      }
-    }
-    dp[s][e] = collapseInto;
-    //If collapseInto == -1, then it doesn't collapse into any one value.
-    return collapseInto;
+  
+  public static int man(int p1, int p2) {
+    return Math.abs(points[p1][0]-points[p2][0])+Math.abs(points[p1][1]-points[p2][1]);
   }
 
   static class FastScanner { 

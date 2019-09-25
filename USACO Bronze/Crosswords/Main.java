@@ -3,46 +3,44 @@ import java.math.*;
 import java.io.*;
 
 class Main {
-  public static int[][] dp;
   public static void main(String[] args) throws IOException {
-    InputStream is = new FileInputStream("248.in");
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("248.out")));
+    InputStream is = new FileInputStream("crosswords.in");
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("crosswords.out")));
     FastScanner sc = new FastScanner(is);
     int N = sc.nextInt();
-    int[] nums = new int[N];
+    int M = sc.nextInt();
+    boolean[][] blocked = new boolean[N][M];
     for (int i = 0; i < N; i++) {
-      nums[i] = sc.nextInt();
-    }
-    dp = new int[N][N];
-    for (int d = 0; d < N; d++) {
-      dp[d][d] = nums[d];
-    }
-    int ans = solve(0,N-1);
-    for (int i = 0; i < N; i++) {
-      for (int j = i; j < N; j++) {
-        ans = Math.max(ans,dp[i][j]);
+      String s = sc.next();
+      for (int j = 0; j < M; j++) {
+        if (s.charAt(j)=='#') {
+          blocked[i][j] = true;
+        }
       }
     }
-    //System.out.println(ans);
-    pw.println(ans);
+    int good = 0;
+    int[][] begs = new int[2500][2];
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < M; j++) {
+        if (blocked[i][j])
+          continue;
+        //horizontal
+        if ((j == 0 || blocked[i][j-1]) && j < M-2 && !blocked[i][j+1] && !blocked[i][j+2]) {
+          begs[good][0] = i+1;
+          begs[good][1] = j+1;
+          good++;
+        } else if ((i == 0 || blocked[i-1][j]) && i < N-2 && !blocked[i+1][j] && !blocked[i+2][j]) {
+          begs[good][0] = i+1;
+          begs[good][1] = j+1;
+          good++;
+        }
+      }
+    }
+    pw.println(good);
+    for (int i = 0; i < good; i++) {
+      pw.println(begs[i][0] + " " + begs[i][1]);
+    }
     pw.close();
-  }
-
-  public static int solve(int s, int e) {
-    if (dp[s][e] != 0)
-      return dp[s][e];
-    int collapseInto = -1;
-    for (int i = s; i < e; i++) {
-      int collapse1 = solve(s,i);
-      int collapse2 = solve(i+1,e);
-      if (collapse1 > 0 && collapse2 > 0 && collapse1 == collapse2) {
-        collapseInto = collapse1+1;
-        break;
-      }
-    }
-    dp[s][e] = collapseInto;
-    //If collapseInto == -1, then it doesn't collapse into any one value.
-    return collapseInto;
   }
 
   static class FastScanner { 
