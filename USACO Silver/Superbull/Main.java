@@ -1,49 +1,55 @@
 import java.util.*;
+import java.math.*;
 import java.io.*;
 
 class Main {
   public static void main(String[] args) throws IOException {
-    InputStream is = new FileInputStream("walk.in");
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("walk.out")));
+    InputStream is = new FileInputStream("superbull.in");
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("superbull.out")));
     FastScanner sc = new FastScanner(is);
-
     int N = sc.nextInt();
-    int K = sc.nextInt();
+    int[] nums = new int[N];
+    for (int i = 0; i < N; i++)
+      nums[i] = sc.nextInt();
+    int[][] adj = new int[N][N];
+    for (int i = 0; i < N; i++) {
+      for (int j = 0; j < N; j++) {
+        //Convert the problem into a MST problem
+        adj[i][j] = -1 * (nums[i] ^ nums[j]);
+      }
+    }
 
-    //Prim's algorithm
-    boolean[] visited = new boolean[N];
     int[] distances = new int[N];
-    Arrays.fill(distances,2019201997);
-    distances[0] = 0;
+    boolean[] visited = new boolean[N];
+    Arrays.fill(distances,Integer.MAX_VALUE);
+    distances[0]  = 0;
+    //Prim's Algorithm
     PriorityQueue<int[]> pq = new PriorityQueue<int[]>(new Comparator<int[]>(){
       public int compare(int[] a, int[] b) {
         return a[1] - b[1];
       }
     });
-
-    int[] temp = {0,0}; //{node,distance}
+    int[] temp = {0,0};
     pq.add(temp);
     while (! pq.isEmpty()) {
       temp = pq.poll();
-      int p = temp[0];
-      visited[p] = true;
-      for (int c = 0; c < N; c++) {
-        int pcDistance = dist(p,c);
-        if (!visited[c] && distances[c] > pcDistance) {
-          distances[c] = pcDistance;
-          int[] temp2 = {c,pcDistance};
+      int parent = temp[0];
+      visited[parent] = true;
+      for (int child = 0; child < N; child++) {
+        if (! visited[child] && distances[child] > adj[parent][child]) {
+          distances[child] = adj[parent][child];
+          int[] temp2 = {child,distances[child]};
           pq.add(temp2);
         }
       }
     }
-    Arrays.sort(distances);
-    pw.println(distances[N+1-K]);
+    long totalMST = 0;
+    for (int i = 1; i < N; i++) {
+      totalMST -= distances[i];
+    }
+    //System.out.println(totalMST);
+    pw.println(totalMST);
     pw.close();
-  }
-
-  public static int dist(int p, int c) {
-    long d = (2019201913L*(Math.min(p,c)+1))+(2019201949L*(Math.max(p,c)+1));
-    return (int)(d%2019201997);
   }
 
   static class FastScanner { 

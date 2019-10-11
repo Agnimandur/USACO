@@ -1,19 +1,28 @@
 import java.util.*;
+import java.math.*;
 import java.io.*;
+import java.awt.Point;
 
 class Main {
+  static int N;
+  static int C;
+  static int[][] fields;
+
   public static void main(String[] args) throws IOException {
-    InputStream is = new FileInputStream("walk.in");
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("walk.out")));
+    InputStream is = new FileInputStream("irrigation.in");
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("irrigation.out")));
     FastScanner sc = new FastScanner(is);
 
-    int N = sc.nextInt();
-    int K = sc.nextInt();
+    N = sc.nextInt();
+    C = sc.nextInt();
+    fields = new int[N][2];
+    for (int i = 0; i < N; i++)
+      fields[i] = new int[]{sc.nextInt(),sc.nextInt()};
 
     //Prim's algorithm
     boolean[] visited = new boolean[N];
     int[] distances = new int[N];
-    Arrays.fill(distances,2019201997);
+    Arrays.fill(distances,Integer.MAX_VALUE);
     distances[0] = 0;
     PriorityQueue<int[]> pq = new PriorityQueue<int[]>(new Comparator<int[]>(){
       public int compare(int[] a, int[] b) {
@@ -28,22 +37,33 @@ class Main {
       int p = temp[0];
       visited[p] = true;
       for (int c = 0; c < N; c++) {
+        if (p==c)
+          continue;
         int pcDistance = dist(p,c);
-        if (!visited[c] && distances[c] > pcDistance) {
+        if (! visited[c] && distances[c] > pcDistance && pcDistance >= C) {
           distances[c] = pcDistance;
           int[] temp2 = {c,pcDistance};
           pq.add(temp2);
         }
       }
     }
-    Arrays.sort(distances);
-    pw.println(distances[N+1-K]);
+
+    long spanDistance = 0;
+    for (int i = 1; i < N; i++) {
+      if (distances[i] == Integer.MAX_VALUE) {
+        spanDistance = -1;
+        break;
+      } else {
+        spanDistance += distances[i];
+      }
+    }
+    //System.out.println(Arrays.toString(distances));
+    pw.println(spanDistance);
     pw.close();
   }
 
   public static int dist(int p, int c) {
-    long d = (2019201913L*(Math.min(p,c)+1))+(2019201949L*(Math.max(p,c)+1));
-    return (int)(d%2019201997);
+    return (fields[p][0]-fields[c][0])*(fields[p][0]-fields[c][0])+(fields[p][1]-fields[c][1])*(fields[p][1]-fields[c][1]);
   }
 
   static class FastScanner { 
