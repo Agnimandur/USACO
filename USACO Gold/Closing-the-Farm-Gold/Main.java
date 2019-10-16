@@ -3,73 +3,47 @@ import java.io.*;
 
 class Main {
   public static void main(String[] args) throws IOException {
-    InputStream is = new FileInputStream("fencedin.in");
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("fencedin.out")));
+    InputStream is = new FileInputStream("closing.in");
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("closing.out")));
     FastScanner sc = new FastScanner(is);
-    int A = sc.nextInt();
-    int B = sc.nextInt();
-    int n = sc.nextInt();
-    int m = sc.nextInt();
-    int[] vertical = new int[n+2];
-    for (int i = 1; i <= n; i++)
-      vertical[i] = sc.nextInt();
-    vertical[n+1] = A;
-    int[] horizontal = new int[m+2];
-    for (int i = 1; i <= m; i++)
-      horizontal[i] = sc.nextInt();
-    horizontal[m+1] = B;
-    Arrays.sort(vertical);
-    Arrays.sort(horizontal);
-
-    ArrayList<Edge> fences = new ArrayList<Edge>((2*m*n)+(m+n));
-
-    //Get all the fences
-    for (int i = 0; i <= n; i++) {
-      for (int j = 0; j < m; j++) {
-        fences.add(new Edge(i, j, i, j+1, vertical[i+1]-vertical[i]));
-      }
+    int N = sc.nextInt();
+    int M = sc.nextInt();
+    ArrayList<Integer>[] graph = new ArrayList[N];
+    for (int i = 0; i < N; i++)
+      graph[i] = new ArrayList<Integer>();
+    for (int i = 0; i < M; i++) {
+      int n1 = sc.nextInt()-1;
+      int n2 = sc.nextInt()-1;
+      graph[n1].add(n2);
+      graph[n2].add(n1);
     }
 
-    for (int j = 0; j <= m; j++) {
-      for (int i = 0; i < n; i++) {
-        fences.add(new Edge(i, j, i+1, j, horizontal[j+1]-horizontal[j]));
+    int[] closing = new int[N];
+    for (int i = 0; i < N; i++)
+      closing[i] = sc.nextInt()-1;
+
+    //Simulate the process of closing the farm in reverse order.
+    DisjointSetUnion dsu = new DisjointSetUnion(N);
+    HashSet<Integer> open = new HashSet<Integer>();
+    String[] ans = new String[N];
+    for (int i = N-1; i >= 0; i--) {
+      open.add(closing[i]);
+      for (int child: graph[closing[i]]) {
+        if (open.contains(child) && !dsu.connected(child,closing[i])) {
+          dsu.connect(child,closing[i]);
+        }
+      }
+
+      if (dsu.count == i+1) {
+        ans[i] = "YES";
+      } else {
+        ans[i] = "NO";
       }
     }
-    Collections.sort(fences);
-
-    //System.out.println(Arrays.deepToString(fences));
-    DisjointSetUnion dsu = new DisjointSetUnion((n+1)*(m+1));
-    long ans = 0;
-    for (Edge e: fences) {
-      int p = e.r1 + e.c1 * (n+1);
-      int q = e.r2 + e.c2 * (n+1);
-      if (! dsu.connected(p,q)) {
-        ans += e.weight;
-        dsu.connect(p,q);
-        if (dsu.count == 1)
-          break;
-      }
-    }
-
-    pw.println(ans);
+    for (int i = 0; i < N; i++)
+      pw.println(ans[i]);
     pw.close();
   }
-
-  static class Edge implements Comparable<Edge> {
-    public int r1, c1, r2, c2;
-    public int weight;
-    public Edge(int r1, int c1, int r2, int c2, int w) {
-      this.r1 = r1;
-      this.c1 = c1;
-      this.r2 = r2;
-      this.c2 = c2;
-      this.weight = w;
-    }
-    public int compareTo(Edge other) {
-      return weight - other.weight;
-    }
-  }
-
 
   static class DisjointSetUnion {
     private int[] parent;
