@@ -1,133 +1,148 @@
-/*
-ID: shivara2
-LANG: JAVA
-TASK: mootube
-*/
-
 import java.util.*;
 import java.io.*;
 
 class Main {
-  static int N; //num of nodes
-  static int Q; //num of questions
-  static Edge[] edges;
-  static Query[] queries;
-
   public static void main(String[] args) throws IOException {
-    //mootube.in
-    BufferedReader br = new BufferedReader(new FileReader("mootube.in"));
-    StringTokenizer st = new StringTokenizer(br.readLine());
-    N = Integer.parseInt(st.nextToken());
-    Q = Integer.parseInt(st.nextToken());
-     
-    edges = new Edge[N-1];
-    for (int i = 0; i < N-1; i++) {
-      st = new StringTokenizer(br.readLine());
-      int p = Integer.parseInt(st.nextToken())-1;
-      int q = Integer.parseInt(st.nextToken())-1;
-      int r = Integer.parseInt(st.nextToken());
-      edges[i] = new Edge(p,q,r);
-    }
-    Arrays.sort(edges);
-
-    queries = new Query[Q];
-    for (int i = 0; i < Q; i++) {
-      st = new StringTokenizer(br.readLine());
-      int k = Integer.parseInt(st.nextToken());
-      int v = Integer.parseInt(st.nextToken())-1;
-      queries[i] = new Query(k,v,i);
-    }
-    Arrays.sort(queries);
-
-    //Disjoint Set Data Structure
-    DisjointSets ds = new DisjointSets(N);
-    //The answer to each question
-    int[] answers = new int[Q];
-
-		int idx = 0;
-		for (Query query: queries) {
-			while (idx < edges.length && edges[idx].relevance >= query.relThreshold) {
-        Edge e = edges[idx];
-				ds.connect(e.node1,e.node2);
-				idx++;
-      }
-			answers[query.number] = ds.branchSize(query.video)-1;
-		}
-
-    //mootube.out
+    InputStream is = new FileInputStream("mootube.in");
     PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("mootube.out")));
-		for (int i = 0; i < Q; i++)
-			pw.println(answers[i]);
-		pw.close();
+    FastScanner sc = new FastScanner(is);
+    int N = sc.nextInt();
+    int Q = sc.nextInt();
+    int[][] tree = new int[N][3];
+    for (int i = 0; i < N-1; i++) {
+      tree[i][0] = sc.nextInt()-1; //video1
+      tree[i][1] = sc.nextInt()-1; //video2
+      tree[i][2] = sc.nextInt(); //relevance
+    }
+    tree[N-1] = new int[]{-1,-1,0};
+    int[][] queries = new int[Q][3];
+    for (int i = 0; i < Q; i++) {
+      queries[i][0] = sc.nextInt(); //rel. threshold
+      queries[i][1] = sc.nextInt()-1; //video
+      queries[i][2] = i; //index (offline queries)
+    }
+    //Highest relevance connections in the tree come first
+    Arrays.sort(tree, new Comparator<int[]>() {
+      @Override
+      public int compare(int[] arr1, int[] arr2) {
+        return arr2[2]-arr1[2];
+      }
+    });
+
+    //strictest relevance thresholds come first.
+    Arrays.sort(queries, new Comparator<int[]>() {
+      @Override
+      public int compare(int[] arr1, int[] arr2) {
+        return arr2[0]-arr1[0];
+      }
+    });
+
+    DisjointSetUnion dsu = new DisjointSetUnion(N);
+    int tIndex = 0;
+    int[] queryAns = new int[Q];
+    for (int q = 0; q < Q; q++) {
+      int rel = queries[q][0];
+      int vid = queries[q][1];
+      while (tree[tIndex][2] >= rel) {
+        if (! dsu.connected(tree[tIndex][0],tree[tIndex][1])) {
+          dsu.connect(tree[tIndex][0],tree[tIndex][1]);
+        }
+        tIndex++;
+      }
+
+      //Answer to the query is how many videos are in the videos "disjoint set".
+      int ans = dsu.weight[dsu.root(vid)]-1;
+      queryAns[queries[q][2]] = ans;
+    }
+
+    for (int i = 0; i < Q; i++)
+      pw.println(queryAns[i]);
+    pw.close();
   }
-}
 
-class DisjointSets {
-  public int N;
-  public int[] parent;
-  public int[] rank;
+  static class DisjointSetUnion {
+    public int[] parent;
+    public int[] weight;
+    public int count;
 
-  public DisjointSets(int numNodes) {
-    N = numNodes;
-    parent = new int[N];
-    rank = new int[N];
-    for (int i = 0; i < N; i++) {
-      parent[i] = i;
-      rank[i] = 1;
+    public DisjointSetUnion(int nodes) {
+      count = nodes;
+      parent = new int[nodes];
+      weight = new int[nodes];
+      for (int i = 0; i < nodes; i++) {
+        parent[i] = i;
+        weight[i] = 1;
+      }
+    }
+    //"find"
+    public int root(int p) {
+      while (p != parent[p]) {
+        p = parent[p];
+      }
+      return p;
+    }
+
+    //"union"
+    public void connect(int p, int q) {
+      int rootP = root(p);
+      int rootQ = root(q);
+      if (rootP == rootQ) return;
+      if (weight[rootP] < weight[rootQ]) {
+        parent[rootP] = rootQ;
+        weight[rootQ] += weight[rootP];
+      } else {
+        parent[rootQ] = rootP;
+        weight[rootP] += weight[rootQ];
+      }
+      count--;
+    }
+
+    public boolean connected(int p, int q) {
+      return root(p) == root(q);
     }
   }
 
-  public int branchSize(int p) {
-    return rank[root(p)];
-  }
-
-  public int root(int p) {
-    while (p != parent[p])
-      p = parent[p];
-    return p;
-  }
-
-  //only connect p and q if they are disjointed.
-  public void connect(int p, int q) {
-    int rootP = root(p);
-    int rootQ = root(q);
-    if (rank[rootP] >= rank[rootQ]) {
-      parent[rootQ] = rootP;
-      rank[rootP] += rank[rootQ];
-    } else if (rank[rootQ] > rank[rootP]) {
-      parent[rootP] = rootQ;
-      rank[rootQ] += rank[rootP];
+  static class FastScanner { 
+    public BufferedReader br; 
+    public StringTokenizer st; 
+  
+    public FastScanner(InputStream is) throws IOException { 
+      br = new BufferedReader(new InputStreamReader(is),32768);
+      st = null;
     }
-  }
-}
-
-class Edge implements Comparable<Edge> {
-  public int node1,node2,relevance;
-
-  public Edge(int p, int q, int r) {
-    node1 = p;
-    node2 = q;
-    relevance = r;
-  }
-
-  public int compareTo (Edge e) {
-    return e.relevance - relevance;
-  }
-
-  public String toString() {
-    return "[" + node1 + " " + node2 + " " + relevance + "]";
-  }
-}
-
-class Query implements Comparable<Query> {
-  public int relThreshold, video, number;
-
-  public Query(int k, int v, int i) {
-    relThreshold = k;
-    video = v;
-    number = i;
-  }
-  public int compareTo(Query q) {
-    return q.relThreshold - relThreshold;
+  
+    public String next() { 
+      while (st == null || !st.hasMoreTokens()) { 
+        try { 
+          st = new StringTokenizer(br.readLine()); 
+        } 
+        catch (IOException  e) { 
+          throw new RuntimeException(e);
+        }
+      } 
+      return st.nextToken(); 
+    } 
+  
+    public int nextInt() { 
+      return Integer.parseInt(next()); 
+    } 
+  
+    public long nextLong() { 
+      return Long.parseLong(next()); 
+    } 
+  
+    public double nextDouble() { 
+      return Double.parseDouble(next()); 
+    } 
+  
+    public String nextLine() { 
+      String str = ""; 
+      try { 
+        str = br.readLine(); 
+      } catch (IOException e) { 
+        throw new RuntimeException(e);
+      } 
+      return str; 
+    }
   }
 }
