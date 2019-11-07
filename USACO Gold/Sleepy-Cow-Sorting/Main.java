@@ -3,81 +3,114 @@ import java.io.*;
 
 class Main {
   public static void main(String[] args) throws IOException {
-    BufferedReader br = new BufferedReader(new FileReader("sleepy.in"));
-    int N = Integer.parseInt(br.readLine());
-    StringTokenizer st = new StringTokenizer(br.readLine());
-    int[] cows = new int[N];
-    for (int i = 0; i < N; i++) {
-      cows[i] = Integer.parseInt(st.nextToken());
-    }
-    br.close();
-    int[] minFromI = new int[N];
-    minFromI[N-1] = cows[N-1];
-    for (int i = N-2; i >= 0; i--)
-      minFromI[i] = Math.min(minFromI[i+1],cows[i]);
-    //keep track of the sorted cows, to the right of the red line.
-    BinaryIndexedTree bit = new BinaryIndexedTree(N);
-    //Find index of "red line" (aka K).
-    int redLine = 0;
-    for (int i = N-1; i >= 0; i--) {
-      if (cows[i] > minFromI[i]) {
-        redLine = i+1;
-        break;
-      } else {
-        bit.add(1,cows[i]-1);
-      }
-    }
-
+    InputStream is = new FileInputStream("sleepy.in");
     PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("sleepy.out")));
-    pw.println(redLine);
-
-    //Move the unsorted cows to the left of the red line over to the right.
-    for (int i = 0; i < redLine; i++) {
-      int leftDistance = (redLine - i) - 1;
-      int rightDistance = bit.sum(0,cows[i]);
-      pw.print(leftDistance+rightDistance);
-	  if (i < redLine-1) {
-        pw.print(" ");
+    FastScanner sc = new FastScanner(is);
+    int N = sc.nextInt();
+    int[] order = new int[N];
+    for (int i = 0; i < N; i++)
+      order[i] = sc.nextInt()-1;
+    
+    BinaryIndexedTree bit = new BinaryIndexedTree(N);
+    //The binary indexed tree will hold an array of 0s and 1s. A one representations a cow present in the sorted list at the back.
+    int cow = order[N-1];
+    bit.add(1,cow);
+    int T = 0;
+    for (int i = N-2; i >= 0; i--) {
+      if (order[i] < cow) {
+        cow = order[i];
+        bit.add(1,cow);
+      } else {
+        T = i+1;
+        break;
       }
-      bit.add(1,cows[i]-1);
     }
-	pw.println();
+    pw.println(T);
+    for (int i = 0; i < T; i++) {
+      int ans = (T-1-i)+bit.sum(0,order[i]+1);
+      if (i < T-1)
+        pw.print(ans + " ");
+      else
+        pw.println(ans);
+      bit.add(1,order[i]);
+    }
     pw.close();
   }
-}
 
-class BinaryIndexedTree {
-  private int[] arr;
+  static class BinaryIndexedTree {
+    public int[] arr;
 
-  public BinaryIndexedTree (int len) {
-    arr = new int[len+1];
-  }
+    public BinaryIndexedTree (int N) {
+      arr = new int[N+1];
+      arr[0] = 0;
+    }
 
-  //add k to the i-th element.
-  public void add(int k, int i) {
-    int node = i+1;
-    while (node < arr.length) {
-      arr[node] += k;
-      node += node & (-node);
+    //add k to the i-th element.
+    public void add(int k, int i) {
+      int node = i+1;
+      while (node < arr.length) {
+        arr[node] += k;
+        node += node & (-node);
+      }
+    }
+
+    //sum up the elements from input[s_i] to input[e_i], from [s_i,e_i).
+    public int sum(int s_i, int e_i) {
+      return sum(e_i) - sum(s_i);
+    }
+
+    public int sum(int i) {
+      int total = 0;
+      int node = i;
+      while (node > 0) {
+        total += arr[node];
+        node -= node & (-node);
+      }
+      return total;
     }
   }
 
-  //sum up the elements from input[s_i] to input[e_i], from [s_i,e_i).
-  public int sum(int s_i, int e_i) {
-    return sum(e_i) - sum(s_i);
-  }
-
-  public int sum(int i) {
-    int total = 0;
-    int node = i;
-    while (node > 0) {
-      total += arr[node];
-      node -= node & (-node);
+  static class FastScanner { 
+    public BufferedReader br; 
+    public StringTokenizer st; 
+  
+    public FastScanner(InputStream is) throws IOException { 
+      br = new BufferedReader(new InputStreamReader(is),32768);
+      st = null;
     }
-    return total;
-  }
-
-  public int[] getArr() {
-    return arr;
+  
+    public String next() { 
+      while (st == null || !st.hasMoreTokens()) { 
+        try { 
+          st = new StringTokenizer(br.readLine()); 
+        } 
+        catch (IOException  e) { 
+          throw new RuntimeException(e);
+        }
+      } 
+      return st.nextToken(); 
+    } 
+  
+    public int nextInt() { 
+      return Integer.parseInt(next()); 
+    } 
+  
+    public long nextLong() { 
+      return Long.parseLong(next()); 
+    } 
+  
+    public double nextDouble() { 
+      return Double.parseDouble(next()); 
+    } 
+  
+    public String nextLine() { 
+      String str = ""; 
+      try { 
+        str = br.readLine(); 
+      } catch (IOException e) { 
+        throw new RuntimeException(e);
+      } 
+      return str; 
+    }
   }
 }

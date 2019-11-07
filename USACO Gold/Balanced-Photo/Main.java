@@ -3,74 +3,113 @@ import java.io.*;
 
 class Main {
   public static void main(String[] args) throws IOException {
-    BufferedReader br = new BufferedReader(new FileReader("bphoto.in"));
-    int N = Integer.parseInt(br.readLine());
-    int[][] cows = new int[N][2];
-    int[] ones = new int[N];
+    InputStream is = new FileInputStream("bphoto.in");
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("bphoto.out")));
+    FastScanner sc = new FastScanner(is);
+
+    int N = sc.nextInt();
+    int[][] nums = new int[N][2]; //[num,index]
     for (int i = 0; i < N; i++) {
-      int height = Integer.parseInt(br.readLine());
-      cows[i][0] = height;
-      cows[i][1] = i;
-      ones[i] = 1;
+      nums[i][0] = sc.nextInt();
+      nums[i][1] = i;
     }
-    br.close();
-    
-    BinaryIndexedTree bit = new BinaryIndexedTree(ones);
-    Arrays.sort(cows, new Comparator<int[]>() {
+    Arrays.sort(nums, new Comparator<int[]>() {
       @Override
       public int compare(int[] arr1, int[] arr2) {
-        return arr1[0]-arr2[0];
+        return arr2[0]-arr1[0];
       }
     });
-
-    int unbalanced = 0;
-    for (int[] cow: cows) {
-      int index = cow[1];
-      bit.add(-1,index);
-      int L_i = bit.sum(0,index);
-      int R_i = bit.sum(index+1,cows.length);
-      if (Math.max(L_i,R_i) > 2 * Math.min(L_i,R_i))
-        unbalanced++;
+    BinaryIndexedTree bit = new BinaryIndexedTree(N);
+    int ans = 0;
+    for (int i = 0; i < N; i++) {
+      int L = bit.sum(nums[i][1]);
+      int R = i-L;
+      if (Math.max(L,R) > 2*Math.min(L,R))
+        ans++;
+      bit.add(1,nums[i][1]);
     }
 
-    //bphoto.out
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("bphoto.out")));
-    pw.println(unbalanced);
+    pw.println(ans);
     pw.close();
   }
-}
+  static class BinaryIndexedTree {
+    private int[] arr;
 
-class BinaryIndexedTree {
-  private int[] arr;
+    public BinaryIndexedTree (int N) {
+      arr = new int[N+1];
+      arr[0] = 0;
+    }
 
-  public BinaryIndexedTree (int[] input) {
-    arr = new int[input.length+1];
-    arr[0] = 0;
-    for (int i = 0; i < input.length; i++)
-      add(input[i],i);
-  }
+    //add k to the i-th element.
+    public void add(int k, int i) {
+      int node = i+1;
+      while (node < arr.length) {
+        arr[node] += k;
+        node += node & (-node);
+      }
+    }
 
-  //add k to the i-th element.
-  public void add(int k, int i) {
-    int node = i+1;
-    while (node < arr.length) {
-      arr[node] += k;
-      node += node & (-node);
+    //sum up the elements from input[s_i] to input[e_i], from [s_i,e_i).
+    public int sum(int s_i, int e_i) {
+      return sum(e_i) - sum(s_i);
+    }
+
+    public int sum(int i) {
+      int total = 0;
+      int node = i;
+      while (node > 0) {
+        total += arr[node];
+        node -= node & (-node);
+      }
+      return total;
+    }
+
+    public int[] getArr() {
+      return arr;
     }
   }
 
-  //sum up the elements from input[s_i] to input[e_i], from [s_i,e_i).
-  public int sum(int s_i, int e_i) {
-    return sum(e_i) - sum(s_i);
-  }
-
-  public int sum(int i) {
-    int total = 0;
-    int node = i;
-    while (node > 0) {
-      total += arr[node];
-      node -= node & (-node);
+  static class FastScanner { 
+    public BufferedReader br; 
+    public StringTokenizer st; 
+  
+    public FastScanner(InputStream is) throws IOException { 
+      br = new BufferedReader(new InputStreamReader(is),32768);
+      st = null;
     }
-    return total;
+  
+    public String next() { 
+      while (st == null || !st.hasMoreTokens()) { 
+        try { 
+          st = new StringTokenizer(br.readLine()); 
+        } 
+        catch (IOException  e) { 
+          throw new RuntimeException(e);
+        }
+      } 
+      return st.nextToken(); 
+    } 
+  
+    public int nextInt() { 
+      return Integer.parseInt(next()); 
+    } 
+  
+    public long nextLong() { 
+      return Long.parseLong(next()); 
+    } 
+  
+    public double nextDouble() { 
+      return Double.parseDouble(next()); 
+    } 
+  
+    public String nextLine() { 
+      String str = ""; 
+      try { 
+        str = br.readLine(); 
+      } catch (IOException e) { 
+        throw new RuntimeException(e);
+      } 
+      return str; 
+    }
   }
 }
