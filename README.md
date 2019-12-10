@@ -1,4 +1,6 @@
 # USACO
-Solutions for USACO problems
-I solve bronze, silver, and gold USACO problems.
-I also provide a template USACO file, thats easy use and very efficient at file io.
+Solutions for USACO problems.
+
+In this github, you will find my Java and Python solutions for many recent bronze, silver, gold, and platinum USACO problems.
+
+Also, you will find my Java fast File IO code, as well as some useful methods and data structures.
