@@ -8,7 +8,7 @@ class Main {
     PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("taskName.out")));
     FastScanner sc = new FastScanner(is);
 
-    int N = sc.nextInt();
+    int N = sc.ni();
 
     pw.println(0);
     pw.close();
@@ -35,15 +35,15 @@ class Main {
       return st.nextToken(); 
     } 
   
-    public int nextInt() { 
+    public int ni() { 
       return Integer.parseInt(next()); 
     } 
   
-    public long nextLong() { 
+    public long nl() { 
       return Long.parseLong(next()); 
     } 
   
-    public double nextDouble() { 
+    public double nd() { 
       return Double.parseDouble(next()); 
     } 
   
