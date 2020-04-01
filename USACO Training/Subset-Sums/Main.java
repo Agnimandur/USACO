@@ -1,85 +1,150 @@
-/*
-ID: shivara2
-LANG: JAVA
-TASK: subset
-*/
-
-import java.util.*;
 import java.io.*;
-
-class subset {
-  public static void main(String[] args) throws IOException {
-    InputStream is = new FileInputStream("subset.in");
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("subset.out")));
-    FastScanner sc = new FastScanner(is);
-
-    int N = sc.nextInt();
-    int target = N*(N+1)/2;
-    long ans = 0;
-    if (target % 2 == 0) {
-      target /= 2;
-
-      //Knapsack DP to find how many ways to find a subset from 1 to N that has a sum of target.
-      long[][] dp = new long[N+1][N*(N+1)/2 + 1];
-      dp[0][0] = 1L;
-      for (int i = 1; i <= N; i++) {
-        for (int j = 0; j < dp[0].length; j++) {
-          //Don't include the item i.
-          dp[i][j] = dp[i-1][j];
-        }
-        for (int j = 0; j < dp[0].length-i; j++) {
-          //include the item i
-          dp[i][j+i] += dp[i-1][j];
-        }
-      }
-      ans = dp[N][target]/2;
-    }
-
-    pw.println(ans);
-    pw.close();
-  }
-
-  static class FastScanner { 
-    public BufferedReader br; 
-    public StringTokenizer st; 
+import java.util.*;
+import java.math.*;
+import java.awt.Point;
+ 
+public class Main {
+	//static final long MOD = 998244353L;
+	//static final long INF = -1000000000000000007L;
+	static final long MOD = 1000000007L;
+	//static final int INF = 1000000007;
+	
+	static long[] factorial;
+	
+	public static void main(String[] args) {
+		FastScanner sc = new FastScanner();
+		PrintWriter pw = new PrintWriter(System.out);
+		int N = sc.ni();
+		long K = sc.nl();
+		//The lists we use
+		ArrayList<Long> pos = new ArrayList<Long>();
+		ArrayList<Long> neg = new ArrayList<Long>();
+		for (int i = 0; i < N; i++) {
+			long n = sc.nl();
+			if (n >= 0)
+				pos.add(n);
+			else
+				neg.add(n);
+		}
+		Collections.sort(pos);
+		Collections.sort(neg);
+		
+		
+		//The overall binary search
+		long min = -1000000000000000000L;
+		long max = 1000000000000000000L;
+		while (min < max) {
+			long med = (min+max)/2;
+			if (min+max < 0)
+				med = (min+max-1)/2;
+			
+			//val stores the number of pairs of products that are less than or equal to "med".
+			long val = 0;
+			
+			//Do the complex iterations over the negatives and positives
+			for (int i = 0; i < neg.size(); i++) {
+				if (med < 0) {
+					if (neg.get(i)*pos.get(pos.size()-1) > med)
+						continue;
+					int low = 0;
+					int high = pos.size()-1;
+					while (low < high) {
+						int ind = (low+high)/2;
+						if (neg.get(i)*pos.get(ind) <= med) {
+							high = ind;
+						} else {
+							low = ind+1;
+						}
+					}
+					val += (pos.size()-low);
+				} else {
+					val += pos.size();
+					if (i==neg.size()-1 || neg.get(i)*neg.get(neg.size()-1) > med) {
+						continue;
+					}
+					int low = i+1;
+					int high = neg.size()-1;
+					while (low < high) {
+						int ind = (low+high)/2;
+						if (neg.get(i)*neg.get(ind) <= med) {
+							high = ind;
+						} else {
+							low = ind+1;
+						}
+					}
+					val += (neg.size() - low);
+				}
+			}
+ 
+			for (int i = 0; i < pos.size(); i++) {
+				if (med < 0) break;
+				if (i==pos.size()-1 || pos.get(i)*pos.get(i+1) > med) {
+					continue;
+				}
+				
+				int low = i+1;
+				int high = pos.size()-1;
+				while (low < high) {
+					int ind = (low+high+1)/2;
+					if (pos.get(i)*pos.get(ind) <= med) {
+						low = ind;
+					} else {
+						high = ind-1;
+					}
+				}
+				val += (low - i);
+			}
+			
+			if (val >= K) {
+				max = med;
+			} else {
+				min = med+1;
+			}
+			//pw.println(min + " " + max + " " + val);
+		}
+		pw.println(min);
+		pw.close();
+	}
+    
+    static class FastScanner { 
+        BufferedReader br; 
+        StringTokenizer st; 
   
-    public FastScanner(InputStream is) throws IOException { 
-      br = new BufferedReader(new InputStreamReader(is),32768);
-      st = null;
-    }
-  
-    public String next() { 
-      while (st == null || !st.hasMoreTokens()) { 
-        try { 
-          st = new StringTokenizer(br.readLine()); 
+        public FastScanner() { 
+            br = new BufferedReader(new InputStreamReader(System.in)); 
         } 
-        catch (IOException  e) { 
-          throw new RuntimeException(e);
+  
+        String next() { 
+            while (st == null || !st.hasMoreElements()) { 
+                try { 
+                    st = new StringTokenizer(br.readLine());
+                } catch (IOException  e) { 
+                    e.printStackTrace(); 
+                } 
+            } 
+            return st.nextToken(); 
+        } 
+  
+        int ni() { 
+            return Integer.parseInt(next()); 
+        } 
+  
+        long nl() { 
+            return Long.parseLong(next()); 
+        } 
+  
+        double nd() { 
+            return Double.parseDouble(next()); 
+        } 
+  
+        String nextLine() { 
+            String str = ""; 
+            try { 
+                str = br.readLine(); 
+            } catch (IOException e) {
+                e.printStackTrace(); 
+            } 
+            return str;
         }
-      } 
-      return st.nextToken(); 
-    } 
-  
-    public int nextInt() { 
-      return Integer.parseInt(next()); 
-    } 
-  
-    public long nextLong() { 
-      return Long.parseLong(next()); 
-    } 
-  
-    public double nextDouble() { 
-      return Double.parseDouble(next()); 
-    } 
-  
-    public String nextLine() { 
-      String str = ""; 
-      try { 
-        str = br.readLine(); 
-      } catch (IOException e) { 
-        throw new RuntimeException(e);
-      } 
-      return str; 
     }
-  }
 }
