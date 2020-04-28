@@ -1,11 +1,12 @@
 import java.util.*;
-import java.math.*;
 import java.io.*;
 
 class Main {
+  public static final String TASKNAME = "taskname";
+
   public static void main(String[] args) throws IOException {
-    InputStream is = new FileInputStream("taskname.in");
-    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter("taskName.out")));
+    InputStream is = new FileInputStream(TASKNAME+".in");
+    PrintWriter pw = new PrintWriter(new BufferedWriter(new FileWriter(TASKNAME+".out")));
     FastScanner sc = new FastScanner(is);
 
     int N = sc.ni();
