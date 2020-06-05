@@ -1,12 +1,15 @@
 public class SuffixArray {
-  public Suffix[] sorted; //suffixes in lexigraphical order
-  public Suffix[] suffixes; //the suffixes in the order provided by the string.
-  public int[] nums;
-  public int p;
-  public int N;
+  private Suffix[] sorted; //suffixes in lexigraphical order
+  private Suffix[] suffixes; //the suffixes in the order provided by the string.
+  private int[] nums;
+  private int p;
+  private int N;
 
   //Longest common prefix
   public int[] lcp;
+
+  //Suffixes in Lexographical order
+  public int[] order;
 
   public SuffixArray(String s) {
     nums = new int[s.length()];
@@ -26,7 +29,6 @@ public class SuffixArray {
     N = nums.length;
     sorted = new Suffix[N];
     suffixes = new Suffix[N];
-    lcp = new int[N];
 
     //Normalize the suffixes on their first letter
     int[][] firstNorm = new int[N][2];
@@ -80,13 +82,19 @@ public class SuffixArray {
         suffixes[sorted[j].index].num1 = newNorm[j];
       }
     }
+
+    //Public output values
+    order = new int[N];
+    for (int i = 0; i < N; i++)
+      order[i] = sorted[i].index;
+    lcp = new int[N];
   }
 
   public void kasai() {
     //Run Kasai's LCP algorithm
     int[] sufInv = new int[N];
     for (int i = 0; i < N; i++) {
-      sufInv[sorted[i].index] = i;
+      sufInv[order[i]] = i;
     }
     int k = 0;
     for (int i = 0; i < N; i++) {
@@ -95,7 +103,7 @@ public class SuffixArray {
         continue;
       }
 
-      int j = sorted[sufInv[i]+1].index;
+      int j = order[sufInv[i]+1];
       while (i+k<N && j+k < N && nums[i+k]==nums[j+k]) {
         k++;
       }
