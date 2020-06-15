@@ -23,19 +23,21 @@ public class Dijkstra {
     previousNode = new int[N];
   }
 
-  public static void dijkstra(ArrayList<Edge>[] graph) {
+  public void dijkstra(int root) {
     Arrays.fill(distances,Long.MAX_VALUE);
-    distances[0] = 0L;
+    distances[root] = 0L;
     PriorityQueue<Input> pq = new PriorityQueue<Input>();
 
-    Input temp = new Input(0,0L);
+    Input temp = new Input(root,0L);
     pq.add(temp);
     while (! pq.isEmpty()) {
       temp = pq.poll();
-      for (int child: graph[temp.node]) {
-        if (distances[child] > distances[temp.node] + temp.weight) {
+      for (Edge e: graph[temp.node]) {
+        int child = e.to;
+        long w = e.weight;
+        if (distances[child] > distances[temp.node] + w) {
           previousNode[child] = temp.node;
-          distances[child] = distances[temp.node] + temp.weight;
+          distances[child] = distances[temp.node] + w;
           pq.add(new Input(child,distances[child]));
         }
       }

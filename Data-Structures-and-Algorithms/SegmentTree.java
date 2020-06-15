@@ -10,7 +10,15 @@ public class SegmentTree {
     tree = new long[4*N+1];
   }
 
-  public long query(int treeIndex, int lo, int hi, int i, int j) {
+  public long query(int i, int j) {
+    return query(0,0,N-1,i,j);
+  }
+
+  public void update(int arrIndex, long val) {
+    update(0,0,N-1,arrIndex,val);
+  }
+
+  private long query(int treeIndex, int lo, int hi, int i, int j) {
     // query for arr[i..j]
     if (lo > j || hi < i)
       return 0;
@@ -30,7 +38,7 @@ public class SegmentTree {
     return merge(leftQuery, rightQuery);
   }
 
-  public void update(int treeIndex, int lo, int hi, int arrIndex, long val) {
+  private void update(int treeIndex, int lo, int hi, int arrIndex, long val) {
     if (lo == hi) {
       tree[treeIndex] = val;
       return;
@@ -47,7 +55,7 @@ public class SegmentTree {
     tree[treeIndex] = merge(tree[2 * treeIndex + 1], tree[2 * treeIndex + 2]);
   }
 
-  public long merge(long a, long b) {
+  private long merge(long a, long b) {
     return (a+b);
   }
 }

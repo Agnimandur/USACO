@@ -4,12 +4,14 @@ public class MinQueue {
   private ArrayDeque<Integer> s1Min;
   private ArrayDeque<Integer> s2Num;
   private ArrayDeque<Integer> s2Min;
+  private int size;
   
   public MinQueue() {
     s1Num = new ArrayDeque<Integer>();
     s1Min = new ArrayDeque<Integer>();
     s2Num = new ArrayDeque<Integer>();
     s2Min = new ArrayDeque<Integer>();
+    size = 0;
   }
   
   public int queryMin() {
@@ -28,6 +30,7 @@ public class MinQueue {
     int min = s1Num.isEmpty()? n : Math.min(n,s1Min.peek());
     s1Num.push(n);
     s1Min.push(min);
+    size++;
   }
   
   public void remove() {
@@ -42,5 +45,10 @@ public class MinQueue {
     }
     s2Num.pop();
     s2Min.pop();
+    size--;
+  }
+
+  public int size() {
+    return size;
   }
 }
