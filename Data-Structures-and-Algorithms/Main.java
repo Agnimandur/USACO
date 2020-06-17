@@ -8,7 +8,7 @@ class Main {
   public static int[][] sort(int[][] arr) {
     //Sort an array (immune to quicksort TLE)
 		Random rgen = new Random();
-		for (int i = 0; i < 3*arr.length; i++) {
+		for (int i = 0; i < arr.length; i++) {
       int randomPosition = rgen.nextInt(arr.length);
       int[] temp = arr[i];
       arr[i] = arr[randomPosition];
@@ -27,7 +27,7 @@ class Main {
   public static long[][] sort(long[][] arr) {
     //Sort an array (immune to quicksort TLE)
 		Random rgen = new Random();
-		for (int i = 0; i < 3*arr.length; i++) {
+		for (int i = 0; i < arr.length; i++) {
       int randomPosition = rgen.nextInt(arr.length);
       long[] temp = arr[i];
       arr[i] = arr[randomPosition];
