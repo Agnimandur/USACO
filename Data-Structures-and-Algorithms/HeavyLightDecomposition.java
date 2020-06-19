@@ -1,6 +1,10 @@
-public class HeavyLightDecomposition {
-  //Remember to set the merge operator manually. Also, if necessary, change everything to longs.
+//Remember to set the merge operator manually. Also, if necessary, change everything to longs.
+//Heavy Light decomposition is used when you want to make queries along the simple path from vertex a to b on a tree.
+//Input (a list "edges" that define the tree, a list "input" of the initial values of each node)
+//Update (node to change, newVal for that node to be)
+//Query (a,b) endpoints of the simplepath of the query.
 
+public class HeavyLightDecomposition {
   //Original Graph
   public ArrayList<Integer>[] original;
   public int[] subSize;
