@@ -1,76 +1,75 @@
-//Data structure that supports range updates and range min, max, and sum queries
-public class LazyST {
-  public long[][] ranges;
+//Data structure that supports range updates and range min, max, and sum queries. 0-indexed!
+//NOTE: still potentially buggy!
+//MANUALLY SET: none,merge,operation
 
-  public SegmentTree(long[] array) {
-    ranges = new long[4*array.length+1][4];
-    for (int i = 0; i < array.length; i++) {
-      add(1,1,array.length,i+1,i+1,array[i]);
-    }
+public class LazyST {
+  public long[] tree;
+  public long[] lazy;
+  public int N;
+  public long NONE;
+
+  public LazyST(int n) {
+    N = n;
+    tree = new long[4*N+1];
+    lazy = new long[4*N+1];
+    NONE = 0; //manually set NONE based on the problem.
   }
 
   //range update nums[updateL..updateR] += val;
-  public void add(int n, int L, int R, int updateL, int updateR, long val) {
+  public void add(int updateL, int updateR, long val) {
+    add(0,0,N-1,updateL,updateR,val);
+  }
+
+  private void add(int n, int L, int R, int updateL, int updateR, long val) {
     push(n,L,R);
     if (updateL <= L && R <= updateR) {
       //fully contained
-      ranges[n][3] += val;
+      lazy[n] += val;
       push(n,L,R);
       return;
     } else if (L>updateR || R<updateL || L==R) {
       //not contained at all or leaf
       return;
     }
-    add(2*n,L,(L+R)/2,updateL,updateR,val); 
-    add(2*n+1,(L+R)/2+1,R,updateL,updateR,val);
-    ranges[n][1] = Math.min(ranges[2*n][1],ranges[2*n+1][1]);
-    ranges[n][2] = Math.max(ranges[2*n][2],ranges[2*n+1][2]);
-    ranges[n][0] = ranges[2*n][0] + ranges[2*n+1][0];
+    add(2*n+1,L,(L+R)/2,updateL,updateR,val); 
+    add(2*n+2,(L+R)/2+1,R,updateL,updateR,val);
+    tree[n] = merge(tree[2*n+1],tree[2*n+2]);
   }
 
-  public long minQuery(int n, int L, int R, int Lq, int Rq) {
+  public long query(int Lq, int Rq) {
+    return query(0,0,N-1,Lq,Rq);
+  }
+
+  private long query(int n, int L, int R, int Lq, int Rq) {
     push(n,L,R);
     if (Lq <= L && R <= Rq) {
-      return ranges[n][1];
-    } else if (R < Lq || Rq < L || L==R) {
-      return 1000000000000007L;
+      return tree[n];
+    } else if (R < Lq || Rq < L) {
+      return NONE;
     } else {
-      return Math.min(minQuery(2*n,L,(L+R)/2,Lq,Rq),minQuery(2*n+1,(L+R)/2+1,R,Lq,Rq));
+      return merge(query(2*n+1,L,(L+R)/2,Lq,Rq),query(2*n+2,(L+R)/2+1,R,Lq,Rq));
     }
   }
 
-  public long maxQuery(int n, int L, int R, int Lq, int Rq) {
-    push(n,L,R);
-    if (Lq <= L && R <= Rq) {
-      return ranges[n][2];
-    } else if (R < Lq || Rq < L || L==R) {
-      return -1L;
-    } else {
-      return Math.max(maxQuery(2*n,L,(L+R)/2,Lq,Rq),maxQuery(2*n+1,(L+R)/2+1,R,Lq,Rq));
-    }
-  }
-
-  public long sumQuery(int n, int L, int R, int Lq, int Rq) {
-    push(n,L,R);
-    if (Lq <= L && R <= Rq) {
-      return ranges[n][0];
-    } else if (R < Lq || Rq < L || L==R) {
-      return 0L;
-    } else {
-      return (sumQuery(2*n,L,(L+R)/2,Lq,Rq) + sumQuery(2*n+1,(L+R)/2+1,R,Lq,Rq));
-    }
-  }
-
-  public void push(int n, int L, int R) {
-    ranges[n][1] += ranges[n][3];
-    ranges[n][2] += ranges[n][3];
-    ranges[n][0] += (R-L+1)*ranges[n][3];
+  private void push(int n, int L, int R) {
+    tree[n] += operation(lazy[n],L,R);
     
     if (L < R) {
-      ranges[2*n][3] += ranges[n][3];
-      ranges[2*n+1][3] += ranges[n][3];
+      lazy[2*n+1] += lazy[n];
+      lazy[2*n+2] += lazy[n];
     }
+    lazy[n] = 0L;
+  }
 
-    ranges[n][3] = 0;
+  public long merge(long a, long b) {
+    //return Math.min(a,b); //min,NONE=INF
+    //return Math.max(a,b); //max,NONE=NEG INF
+    return (a+b); //sum,NONE=0
+  }
+
+  //used to process lazy updates
+  public long operation(long a, long L, long R) {
+    //return a; //min or max
+    return (R-L+1)*a; //sum
   }
 }
