@@ -1,16 +1,16 @@
+//implementation of union find data structure
 public class DisjointSetUnion {
   public int[] parent;
   public int[] weight;
   public int count;
 
-  public DisjointSetUnion(int nodes) {
-    count = nodes;
-    parent = new int[nodes];
-    weight = new int[nodes];
-    for (int i = 0; i < nodes; i++) {
+  public DisjointSetUnion(int N) {
+    count = N;
+    parent = new int[N];
+    for (int i = 0; i < N; i++)
       parent[i] = i;
-      weight[i] = 1;
-    }
+    weight = new int[N];
+    Arrays.fill(weight,1);
   }
 
   //"find"
@@ -23,15 +23,16 @@ public class DisjointSetUnion {
 
   //"union"
   public void connect(int p, int q) {
-    int rootP = root(p);
-    int rootQ = root(q);
-    if (rootP == rootQ) return;
-    if (weight[rootP] < weight[rootQ]) {
-      parent[rootP] = rootQ;
-      weight[rootQ] += weight[rootP];
+    p = root(p);
+    q = root(q);
+    if (p==q)
+      return;
+    if (weight[p] < weight[q]) {
+      parent[p] = q;
+      weight[q] += weight[p];
     } else {
-      parent[rootQ] = rootP;
-      weight[rootP] += weight[rootQ];
+      parent[q] = p;
+      weight[p] += weight[q];
     }
     count--;
   }
