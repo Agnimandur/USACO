@@ -13,8 +13,13 @@ public class Dijkstra {
 
   //uncomment the last line to make every edge two-way
   public void addEdge(long[] edge) {
-    graph[n1].add(new long[]{edge[1],edge[2]});
-    //graph[n2].add(new long[]{edge[0],edge[2]});
+    graph[edge[0]].add(new long[]{edge[1],edge[2]});
+    //graph[edge[1]].add(new long[]{edge[0],edge[2]});
+  }
+
+  public void addEdge(int n1, int n2, long w) {
+    graph[n1].add(new long[]{n2,w});
+    //graph[n2].add(new long[]{n1,w});
   }
 
   //uncomment the lines with "previousNode" if you'd like to calculate that
@@ -41,7 +46,7 @@ public class Dijkstra {
     pq.add(temp);
     while (! pq.isEmpty()) {
       temp = pq.poll();
-      for (long[] e: graph[temp.node]) {
+      for (long[] e: graph[temp[0]]) {
         int child = (int)e[0];
         long w = e[1];
         int node = (int)temp[0];
