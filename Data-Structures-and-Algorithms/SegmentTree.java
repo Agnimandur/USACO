@@ -1,13 +1,18 @@
 //No lazy propagation. 0 indexed. Very fast.
 public class SegmentTree {
-  public long[] arr;
   public long[] tree;
+  public long NONE;
   public int N;
 
   //Zero initialization
   public SegmentTree(int n) {
     N = n;
     tree = new long[4*N+1];
+    NONE = 0L; //set this manually (Long.MIN_VALUE for max-st, Long.MAX_VALUE for min-st, 0 for sum,xor-st, etc.)
+  }
+  
+  public long merge(long a, long b) {
+    return (a+b); //set this manually
   }
 
   public long query(int i, int j) {
@@ -21,7 +26,7 @@ public class SegmentTree {
   private long query(int treeIndex, int lo, int hi, int i, int j) {
     // query for arr[i..j]
     if (lo > j || hi < i)
-      return 0;
+      return NONE;
     if (i <= lo && j >= hi)
       return tree[treeIndex];
     int mid = lo + (hi - lo) / 2;
@@ -53,9 +58,5 @@ public class SegmentTree {
 
     // merge updates
     tree[treeIndex] = merge(tree[2 * treeIndex + 1], tree[2 * treeIndex + 2]);
-  }
-
-  private long merge(long a, long b) {
-    return (a+b);
   }
 }
