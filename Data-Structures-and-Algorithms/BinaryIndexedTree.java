@@ -15,12 +15,12 @@ public class BinaryIndexedTree {
     }
   }
 
-  //sum up the elements from input[s_i] to input[e_i], from [s_i,e_i).
+  //sum up the elements from input[s_i] to input[e_i], from [s_i,e_i].
   public int sum(int s_i, int e_i) {
-    return sum(e_i) - sum(s_i);
+    return sum(e_i+1) - sum(s_i);
   }
 
-  public int sum(int i) {
+  private int sum(int i) {
     int total = 0;
     int node = i;
     while (node > 0) {
