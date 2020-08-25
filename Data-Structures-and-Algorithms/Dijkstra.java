@@ -1,23 +1,20 @@
 //Dijkstra's Shortest Path Algorithm
 public class Dijkstra {
   public int N;
-  public ArrayList<Edge>[] graph;
+  public ArrayList<long[]>[] graph;
 
   public Dijkstra(int numNodes) {
     N = numNodes;
     graph = new ArrayList[N];
     for (int i = 0; i < N; i++) {
-      graph[i] = new ArrayList<Edge>();
+      graph[i] = new ArrayList<long[]>();
     }
   }
 
   //uncomment the last line to make every edge two-way
   public void addEdge(long[] edge) {
-    int n1 = (int)edge[0];
-    int n2 = (int)edge[1];
-    long w = edge[2];
-    graph[n1].add(new Edge(n1,n2,w));
-    //graph[n2].add(new Edge(n2,n1,w));
+    graph[n1].add(new long[]{edge[1],edge[2]});
+    //graph[n2].add(new long[]{edge[0],edge[2]});
   }
 
   //uncomment the lines with "previousNode" if you'd like to calculate that
@@ -29,48 +26,33 @@ public class Dijkstra {
     Arrays.fill(distances,Long.MAX_VALUE);
     distances[root] = 0L;
 
-    PriorityQueue<Input> pq = new PriorityQueue<Input>();
-    Input temp = new Input(root,0L);
+    PriorityQueue<long[]> pq = new PriorityQueue<long[]>(new Comparator<long[]>() {
+      @Override
+      public int compare(long[] arr1, long[] arr2) {
+        if (arr1[1] < arr2[1])
+          return -1;
+        else if (arr1[1] > arr2[1])
+          return 1;
+        else
+          return 0;
+      }
+    });
+    long[] temp = new long[]{root,0};
     pq.add(temp);
     while (! pq.isEmpty()) {
       temp = pq.poll();
-      for (Edge e: graph[temp.node]) {
-        int child = e.to;
-        long w = e.weight;
-        if (distances[child] > distances[temp.node] + w) {
+      for (long[] e: graph[temp.node]) {
+        int child = (int)e[0];
+        long w = e[1];
+        int node = (int)temp[0];
+        if (distances[child] > distances[node] + w) {
           //previousNode[child] = temp.node;
-          distances[child] = distances[temp.node] + w;
-          pq.add(new Input(child,distances[child]));
+          distances[child] = distances[node] + w;
+          pq.add(new long[]{child,distances[child]});
         }
       }
     }
 
     return distances;
-  }
-
-  static class Input implements Comparable<Input> {
-    public int node;
-    public long weight;
-
-    public Input(int n, long w) {
-      node = n;
-      weight = w;
-    }
-
-    public int compareTo(Input i) {
-      return (int)(weight-i.weight);
-    }
-  }
-
-  static class Edge {
-    public int from;
-    public int to;
-    public long weight;
-
-    public Edge(int f, int t, long w) {
-      from = f;
-      to = t;
-      weight = w;
-    }
   }
 }
