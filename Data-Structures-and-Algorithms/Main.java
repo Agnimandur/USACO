@@ -5,7 +5,7 @@ class Main {
 
   //USEFUL METHODS
 
-  public static int[][] sort(int[][] arr) {
+  public static void sort(int[][] arr) {
     //Sort an array (immune to quicksort TLE)
 		Random rgen = new Random();
 		for (int i = 0; i < arr.length; i++) {
@@ -21,10 +21,9 @@ class Main {
         //Ascending order.
       }
     });
-    return arr;
   }
 
-  public static long[][] sort(long[][] arr) {
+  public static void sort(long[][] arr) {
     //Sort an array (immune to quicksort TLE)
 		Random rgen = new Random();
 		for (int i = 0; i < arr.length; i++) {
@@ -40,11 +39,9 @@ class Main {
           return 1;
         else
           return -1;
-
         //Ascending order.
       }
     });
-    return arr;
   }
 
   //Fast exponentiation (x^y mod m)
@@ -52,7 +49,7 @@ class Main {
     long ans = 1;
     x %= m;
     while (y > 0) {
-      if(y % 2 == 1)
+      if((y&1)==1)
         ans = (ans * x) % m;
       y /= 2;
       x = (x * x) % m;
