@@ -1,4 +1,4 @@
-//No lazy propagation. 0 indexed. Very fast.
+//No lazy propagation. 0 indexed.
 public class SegmentTree {
   public long[] tree;
   public long NONE;
@@ -7,10 +7,10 @@ public class SegmentTree {
   //Zero initialization
   public SegmentTree(int n) {
     N = n;
-    tree = new long[4*N+1];
+    tree = new long[2*N+1];
     NONE = 0L; //set this manually (Long.MIN_VALUE for max-st, Long.MAX_VALUE for min-st, 0 for sum,xor-st, etc.)
   }
-  
+
   public long merge(long a, long b) {
     return (a+b); //set this manually
   }
@@ -19,44 +19,40 @@ public class SegmentTree {
     return query(0,0,N-1,i,j);
   }
 
-  public void update(int arrIndex, long val) {
-    update(0,0,N-1,arrIndex,val);
+  public void update(int i, long val) {
+    update(0,0,N-1,i,val);
   }
 
-  private long query(int treeIndex, int lo, int hi, int i, int j) {
+  private long query(int t, int lo, int hi, int i, int j) {
     // query for arr[i..j]
     if (lo > j || hi < i)
       return NONE;
     if (i <= lo && j >= hi)
-      return tree[treeIndex];
-    int mid = lo + (hi - lo) / 2;
-
-    if (i > mid)
-      return query(2 * treeIndex + 2, mid + 1, hi, i, j);
-    else if (j <= mid)
-      return query(2 * treeIndex + 1, lo, mid, i, j);
+      return tree[t];
     
-    long leftQuery = query(2 * treeIndex + 1, lo, mid, i, mid);
-    long rightQuery = query(2 * treeIndex + 2, mid + 1, hi, mid + 1, j);
+    int mid = (lo+hi)/2;
+    if (i > mid)
+      return query(t+2*(mid-lo+1),mid+1,hi,i,j);
+    else if (j <= mid)
+      return query(t+1,lo,mid,i,j);
 
     // merge query results
-    return merge(leftQuery, rightQuery);
+    return merge(query(t+1, lo, mid, i, mid), query(t+2*(mid-lo+1),mid+1,hi,mid+1,j));
   }
 
-  private void update(int treeIndex, int lo, int hi, int arrIndex, long val) {
+  private void update(int t, int lo, int hi, int i, long val) {
     if (lo == hi) {
-      tree[treeIndex] = val;
+      tree[t] = val;
       return;
     }
 
-    int mid = lo + (hi - lo) / 2;
-
-    if (arrIndex > mid)
-      update(2 * treeIndex + 2, mid + 1, hi, arrIndex, val);
+    int mid = (lo+hi)/2;
+    if (i > mid)
+      update(t+2*(mid-lo+1),mid+1,hi,arrIndex,val);
     else if (arrIndex <= mid)
-      update(2 * treeIndex + 1, lo, mid, arrIndex, val);
+      update(t+1,lo,mid,arrIndex,val);
 
     // merge updates
-    tree[treeIndex] = merge(tree[2 * treeIndex + 1], tree[2 * treeIndex + 2]);
+    merge(tree[t+1],tree[t+2*(mid-lo+1)]);
   }
 }
