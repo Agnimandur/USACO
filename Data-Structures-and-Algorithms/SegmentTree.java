@@ -48,11 +48,11 @@ public class SegmentTree {
 
     int mid = (lo+hi)/2;
     if (i > mid)
-      update(t+2*(mid-lo+1),mid+1,hi,arrIndex,val);
-    else if (arrIndex <= mid)
-      update(t+1,lo,mid,arrIndex,val);
+      update(t+2*(mid-lo+1),mid+1,hi,i,val);
+    else if (i <= mid)
+      update(t+1,lo,mid,i,val);
 
     // merge updates
-    merge(tree[t+1],tree[t+2*(mid-lo+1)]);
+    tree[t] = merge(tree[t+1],tree[t+2*(mid-lo+1)]);
   }
 }
