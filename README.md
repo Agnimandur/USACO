@@ -8,4 +8,4 @@ Additionally, you can find my templates for various data structures and algorith
 Almost all of the code present here is written in Java (except for some old Bronze problems). If you code in Java, this repo might be right for you!
 
 ## Contact Me
-The most direct way to contact me is through [Discord](https://discord.com/). Direct message me at **Agnimandur#0053**.
+The most direct way to contact me is through [Discord](https://discord.com/). Direct message me at [Agnimandur#0053](https://discordapp.com/channels/@Agnimandur/0053/).
