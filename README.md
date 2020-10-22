@@ -1,6 +1,11 @@
 # USACO
-Solutions for USACO problems.
+In this repository, you will primarily find solutions for hundreds of old USACO problems, including many Bronze, Silver, Gold, and Platinum problems. Additionally, you can find my useful USACO code template, including helpful suggestions on what to look out for.
 
-In this github, you will find my Java and Python solutions for many recent bronze, silver, gold, and platinum USACO problems.
+# Data Structures and Algorithms
+Additionally, you can find my templates for various data structures and algorithms which are commonly used in Competitive Programming in general. All of these algorithms are provided in the form of self contained classes, which can be easily integrated into your code.
 
-Also, you will find my Java fast File IO code, as well as some useful methods and data structures.
+# Java
+Almost all of the code present here is written in Java (except for some old Bronze problems). If you code in Java, this repo might be right for you!
+
+# Code Credits
+All code in this repository was written solely by Agnimandur.
