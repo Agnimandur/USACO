@@ -8,6 +8,7 @@ public class MonoQueue {
   private int size;
 
   public int NONE;
+  public ArrayDeque<Integer> q;
   
   public MonoQueue() {
     s1Num = new ArrayDeque<Integer>();
@@ -17,7 +18,14 @@ public class MonoQueue {
     size = 0;
     NONE = 0; //set this manually!
   }
+
+  //set this to be either min or max if you want a MinQueue or a MaxQueue
+  public int merge(int a, int b) {
+    return Math.min(a,b);
+    //return Math.max(a,b);
+  }
   
+  //Get the min/max in the monoqueue
   public int query() {
     if (size==0) return NONE;
     int m;
@@ -31,14 +39,19 @@ public class MonoQueue {
     return m;
   }
   
+  //Add a number to the tail of the queue
   public void add(int n) {
     int m = s1Num.isEmpty() ? n : merge(n,s1M.peek());
     s1Num.push(n);
     s1M.push(m);
     size++;
+    q.add(n);
   }
   
+  //Remove a number from the head of the queue
   public void remove() {
+    if (size==0)return;
+    q.remove();
     if (s2Num.isEmpty()) {
       while (!s1Num.isEmpty()) {
         int n = s1Num.pop();
@@ -57,9 +70,7 @@ public class MonoQueue {
     return size;
   }
 
-  //set this to be either min or max if you want a MinQueue or a MaxQueue
-  private int merge(int a, int b) {
-    return Math.min(a,b);
-    //return Math.max(a,b);
+  public String toString() {
+    return q.toString();
   }
 }
