@@ -6,6 +6,8 @@ public class MonoQueue {
   private ArrayDeque<Integer> s2Num;
   private ArrayDeque<Integer> s2M;
   private int size;
+
+  public int NONE;
   
   public MonoQueue() {
     s1Num = new ArrayDeque<Integer>();
@@ -13,16 +15,18 @@ public class MonoQueue {
     s2Num = new ArrayDeque<Integer>();
     s2M = new ArrayDeque<Integer>();
     size = 0;
+    NONE = 0; //set this manually!
   }
   
   public int query() {
+    if (size==0) return NONE;
     int m;
     if (s1Num.isEmpty()) {
-        m = s2M.peek();
+      m = s2M.peek();
     } else if (s2Num.isEmpty()) {
-        m = s1M.peek();
+      m = s1M.peek();
     } else {
-        m = merge(s1M.peek(),s2M.peek()); 
+      m = merge(s1M.peek(),s2M.peek()); 
     }
     return m;
   }
