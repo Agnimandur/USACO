@@ -20,7 +20,7 @@ public class Combo {
   
   public long choose(int n, int k) {
     if (n<0||k<0||n<k) return 0;
-    long denInv = (invfacs[n]*invfacs[n-k])%MOD;
+    long denInv = (invfacs[k]*invfacs[n-k])%MOD;
     long ans = (facs[n]*denInv)%MOD;
     return ans;
   }
