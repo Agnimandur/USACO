@@ -15,6 +15,7 @@ public class MonoQueue {
     s1M = new ArrayDeque<Integer>();
     s2Num = new ArrayDeque<Integer>();
     s2M = new ArrayDeque<Integer>();
+    q = new ArrayDeque<Integer>();
     size = 0;
     NONE = 0; //set this manually!
   }
