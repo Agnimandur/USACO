@@ -33,10 +33,10 @@ public class Dijkstra {
 
     PriorityQueue<long[]> pq = new PriorityQueue<long[]>(new Comparator<long[]>() {
       @Override
-      public int compare(long[] arr1, long[] arr2) {
-        if (arr1[1] < arr2[1])
+      public int compare(long[] a, long[] b) {
+        if (a[1] < b[1])
           return -1;
-        else if (arr1[1] > arr2[1])
+        else if (a[1] > b[1])
           return 1;
         else
           return 0;

@@ -4,7 +4,7 @@ class Main {
   }
 
   //USEFUL METHODS
-
+  
   public static void sort(int[][] arr) {
     //Sort an array (immune to quicksort TLE)
 		Random rgen = new Random();
@@ -16,8 +16,8 @@ class Main {
 		}
     Arrays.sort(arr, new Comparator<int[]>() {
       @Override
-      public int compare(int[] arr1, int[] arr2) {
-        return arr1[1]-arr2[1];
+      public int compare(int[] a, int[] b) {
+        return a[1]-b[1];
         //Ascending order.
       }
     });
@@ -34,11 +34,13 @@ class Main {
 		}
     Arrays.sort(arr, new Comparator<long[]>() {
       @Override
-      public int compare(long[] arr1, long[] arr2) {
-        if (arr1[0] > arr2[0])
+      public int compare(long[] a, long[] b) {
+        if (a[0] > b[0])
           return 1;
-        else
+        else if (a[0] < b[0])
           return -1;
+        else
+          return 0;
         //Ascending order.
       }
     });
@@ -55,11 +57,6 @@ class Main {
       x = (x * x) % m;
     }
     return ans;
-  }
-
-  //Find the distance between two points
-  public static long dist(int[] point, int[] point2) {
-    return (long)(Math.pow((point2[1]-point[1]),2)+Math.pow((point2[0]-point[0]),2));
   }
   
   //Find the GCD of two numbers
