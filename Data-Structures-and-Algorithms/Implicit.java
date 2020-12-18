@@ -1,5 +1,5 @@
 //Implicit Segment Tree Node (initially all values are 0). Don't forget to set NONE and the merge methods!
-static class Implicit {
+public class Implicit {
 	long L;
 	long R;
 	long val;
