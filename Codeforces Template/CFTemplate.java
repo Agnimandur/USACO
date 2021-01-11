@@ -12,17 +12,20 @@ public class CFTemplate {
     public static void main(String[] args) {
         FastScanner sc = new FastScanner();
         PrintWriter pw = new PrintWriter(System.out);
-        
-        int N = sc.ni();
+
+        int Q = sc.ni();
+        for (int q = 0; q < Q; q++) {
+            int N = sc.ni();
+        }
         pw.close();
     }
-    
+
     static class FastScanner {
         BufferedReader br;
         StringTokenizer st;
  
         public FastScanner() {
-            br = new BufferedReader(new InputStreamReader(System.in));
+            br = new BufferedReader(new InputStreamReader(System.in), 32768);
             st = null;
         }
  
@@ -40,9 +43,23 @@ public class CFTemplate {
         int ni() {
             return Integer.parseInt(next());
         }
+
+        int[] intArray(int N) {
+            int[] ret = new int[N];
+            for (int i = 0; i < N; i++)
+                ret[i] = ni();
+            return ret;
+        }
  
         long nl() {
             return Long.parseLong(next());
+        }
+
+        long[] longArray(int N) {
+            long[] ret = new long[N];
+            for (int i = 0; i < N; i++)
+                ret[i] = nl();
+            return ret;
         }
 
         double nd() {
