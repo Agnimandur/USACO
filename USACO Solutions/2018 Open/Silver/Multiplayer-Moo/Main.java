@@ -37,7 +37,7 @@ class Main {
         root = p;
         break;
       }
-      Stack<ArrayList<Integer>> s = new Stack<ArrayList<Integer>>();
+      ArrayDeque<ArrayList<Integer>> s = new ArrayDeque<ArrayList<Integer>>();
       int regID = gameboard[root.get(0)][root.get(1)];
       int regSize = 0;
       squaresLeft.remove(root);

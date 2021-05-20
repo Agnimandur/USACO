@@ -9,10 +9,10 @@ class Main {
     //Sort an array (immune to quicksort TLE)
 		Random rgen = new Random();
 		for (int i = 0; i < arr.length; i++) {
-      int randomPosition = rgen.nextInt(arr.length);
+      int r = rgen.nextInt(arr.length);
       int[] temp = arr[i];
-      arr[i] = arr[randomPosition];
-      arr[randomPosition] = temp;
+      arr[i] = arr[r];
+      arr[r] = temp;
 		}
     Arrays.sort(arr, new Comparator<int[]>() {
       @Override
@@ -27,10 +27,10 @@ class Main {
     //Sort an array (immune to quicksort TLE)
 		Random rgen = new Random();
 		for (int i = 0; i < arr.length; i++) {
-      int randomPosition = rgen.nextInt(arr.length);
+      int r = rgen.nextInt(arr.length);
       long[] temp = arr[i];
-      arr[i] = arr[randomPosition];
-      arr[randomPosition] = temp;
+      arr[i] = arr[r];
+      arr[r] = temp;
 		}
     Arrays.sort(arr, new Comparator<long[]>() {
       @Override

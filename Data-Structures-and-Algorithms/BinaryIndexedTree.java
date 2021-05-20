@@ -36,7 +36,7 @@ public class BinaryIndexedTree {
 public class BinaryIndexedTree2D {
   public int[][] arr;
 
-  public BinaryIndexedTree (int N, int M) {
+  public BinaryIndexedTree2D (int N, int M) {
     arr = new int[N+1][M+1];
   }
 
