@@ -1,3 +1,6 @@
+## Update: No longer maintained
+As of September 19, 2021, this repository will no longer be actively maintained. The main reason is because I have switched to using C++ for competitive programming.
+
 ## USACO
 In this repository, you will primarily find solutions for hundreds of old USACO problems, including many Bronze, Silver, Gold, and Platinum problems. Additionally, you can find my useful Codeforces code template, including helpful suggestions on what to look out for.
 
